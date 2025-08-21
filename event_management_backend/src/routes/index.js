@@ -1,14 +1,27 @@
 const express = require('express');
 const healthController = require('../controllers/health');
+const authRoutes = require('./auth');
+const eventRoutes = require('./events');
+const rsvpRoutes = require('./rsvps');
 
 const router = express.Router();
-// Health endpoint
+
+/**
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
 
 /**
  * @swagger
  * /:
  *   get:
  *     summary: Health endpoint
+ *     tags: [Health]
  *     responses:
  *       200:
  *         description: Service health check passed
@@ -31,5 +44,10 @@ const router = express.Router();
  *                   example: development
  */
 router.get('/', healthController.check.bind(healthController));
+
+// Mount feature routes
+router.use('/auth', authRoutes);
+router.use('/events', eventRoutes);
+router.use('/', rsvpRoutes); // contains /events/:id/rsvp and /rsvps/me
 
 module.exports = router;

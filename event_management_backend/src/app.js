@@ -14,12 +14,12 @@ app.use(cors({
 }));
 app.set('trust proxy', true);
 app.use('/docs', swaggerUi.serve, (req, res, next) => {
-  const host = req.get('host');           // may or may not include port
-  let protocol = req.protocol;          // http or https
+  const host = req.get('host');
+  let protocol = req.protocol;
 
   const actualPort = req.socket.localPort;
   const hasPort = host.includes(':');
-  
+
   const needsPort =
     !hasPort &&
     ((protocol === 'http' && actualPort !== 80) ||
@@ -39,13 +39,14 @@ app.use('/docs', swaggerUi.serve, (req, res, next) => {
 });
 
 // Parse JSON request body
-app.use(express.json());
+app.use(express.json({ limit: '1mb' }));
 
 // Mount routes
 app.use('/', routes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
+  // eslint-disable-next-line no-console
   console.error(err.stack);
   res.status(500).json({
     status: 'error',
